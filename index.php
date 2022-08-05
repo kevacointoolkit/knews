@@ -77,7 +77,7 @@ let distance = 50;
 if ((scrollTop + clientHeight) >= (scrollHeight - distance)) 
 			{
 
-		if (x < 100) {
+		if (x < 100000) {
 
 			x++;
 			
