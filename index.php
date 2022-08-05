@@ -11,28 +11,20 @@ $kpc->password=$krpcpass;
 $kpc->host=$krpchost;
 $kpc->port=$krpcport;
 
-$rpc = new Raven();
 
-$rpc->username=$rrpcuser;
-$rpc->password=$rrpcpass;
-$rpc->host=$rrpchost;
-$rpc->port=$rrpcport;
 
 $_REQ = array_merge($_GET, $_POST);
 
 
-$blocknext=$_REQ["blocknext"];
 
-if(!$blocknext){
+$blocknow=$kpc-> getblockcount();
 
-$blocknow=$kpc-> getblockcount();$blocknow=intval($blocknow)+1;}else{$blocknow=intval($blocknext)+1;}
+$blocknow=intval($blocknow)+1;
 
 
-if($webmode==1){
 
-$blockread=$blocknow-$sysweb;}else{
 
-$blockread=$blocknow-$syslocal; }
+$blockread=$blocknow-$syslocal;
 
 $blockleft=$blocknow-$blockread;
 
@@ -68,82 +60,93 @@ function decodeHtml(str)
     return str.replace(/&amp;|&lt;|&gt;|&quot;|&#039;/g, function(m) {return map[m];});
 }
 
-$(function(){
+$(function()
+	{
 	var winH = $(window).height(); 
-	var x=1;
+	var x=0;
 
 	
-	$(window).scroll(function () {
-	    var pageH = $(document.body).height();
-		var scrollT = $(window).scrollTop();
-		var aa = (pageH-winH-scrollT)/winH;
-		if(aa<0.5){
+	$(window).scroll(function () 
+		{
+	    let clientHeight  = document.documentElement.clientHeight;
+let scrollHeight = document.body.scrollHeight;
+let scrollTop = document.documentElement.scrollTop;
+ 
+let distance = 50;
+
+if ((scrollTop + clientHeight) >= (scrollHeight - distance)) 
+			{
+
+		if (x < 100) {
+
+			x++;
 			
-		$.ajax({
+		$.ajax(
+			  {
+
           url: "systemjson.php",
            async: false,
 			  data:{page:x},
 			
-            success: function (obj) {
-              if (obj) {
+            success: function (obj) 
+				
+				{
+              if (obj) 
+				  {
                   var datalist = JSON.parse(obj);
                   
                   var str = "";
 				
 				  
 
-                  for (var i = 0; i < datalist.length; i++) {
-var cb='['+datalist[i].block+']';
-var key, count = 0;
-for(key in cb) {
-  if(cb.hasOwnProperty(key)) {
-    count++;
-  }
-}		   
+                  for (var i = 0; i < datalist.length; i++) 
+					  {
+						var cb='['+datalist[i].block+']';
+						var key, count = 0;
+						for(key in cb) 
+							{
+								if(cb.hasOwnProperty(key)) 
+									{
+										count++;
+									}
+							}		   
 		
-		count=count-2;
+						count=count-2;
+											
+						if(datalist[i].npy == 1 )
+							{
 
-		var fone="";
-		var ftwo="";
-				
-				for (var f = 0; f < count; f++) {
-
-					fone+='<span class=\"one\">[</span>';
-					ftwo+='<span class=\"one\">]</span>';
-
-				}
-
-
-
-															
-						if(datalist[i].npy == 1 ){
-
-							if(datalist[i].nptrue == 1 ){
+							if(datalist[i].nptrue == 1 )
+								{
 
 						str += '<div class=\"card mt-2\"><div class=\"card-body\"><div class=\"card-title\"><a href=kpress.php?n=' + datalist[i].np + '><h3 class=\"text-primary\">' + datalist[i].npn + '</h3></a></div><p class=\"text-info card-subtitle mb-3\"><span>' + datalist[i].block + '</span></p><div><div id=\"post-content\"><div class=\"card-text\"></div></div></div></div></div>';
-							}
+								}
 							else
-							{
+								{
 						str += 	'<div class=\"card mt-2\"><div class=\"card-body\"><div class=\"card-title\"><a href=kpress.php?n=' + datalist[i].np + '><h3 class=\"text-primary\">' + datalist[i].npn + '</h3></a></div><p class=\"text-info card-subtitle mb-3\"><span>' + datalist[i].block + '</span></p><div><div id=\"post-content\"><div class=\"card-text\">'+decodeHtml(datalist[i].content)+'</div></div></div></div></div>';
-							}
+								}
 
-						}
-						  else{
-						  str += '<div class=\"card mt-2\"><div class=\"card-body\"><div class=\"card-title\"><h3 class=\"text-primary\"></h3></div><p class=\"text-info card-subtitle mb-3\"><span>' + datalist[i].block + '</span></p><div><div id=\"post-content\"><div class=\"card-text\"></div></div></div></div></div>';}
+							}
+						  else
+							{
+						  str += '<div class=\"card mt-2\"><div class=\"card-body\"><div class=\"card-title\"><h3 class=\"text-primary\"></h3></div><p class=\"text-info card-subtitle mb-3\"><span>' + datalist[i].block + '</span></p><div><div id=\"post-content\"><div class=\"card-text\"></div></div></div></div></div>';
+						  
+							}
 
                        
 						   
 						  
-                 }
+						}
 				 
-                  $("#add").append(str);
+                 $("#add").append(str);
 				 
-               }
-            }
-         });
+					}	
 
+				}		
+			});
+
+		   }	
 		}
-		 x=x+1;
 	});
 	
 });
